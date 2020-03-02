@@ -1,3 +1,7 @@
+##################################
+# Test submit to github repository
+##################################
+
 # NOT FINAL PIECE OF WORK
 
 # User input alignment action
