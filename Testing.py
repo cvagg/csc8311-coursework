@@ -78,6 +78,31 @@ def n_w(seq1, seq2, match=0, mismatch=20, gap=25):
             score = score + gap
         g_items.append(score)
 
+    # print(g_items) #[0, 25, 50, 75]
+
+    # other cols, match, mismatch or gap?
+    score = 0
+    test_items = []
+    for n in range(len(seq1)):
+        if seq1[n] ==
+    # print(n)
+    # if seq2[n] == seq1[n]: #match
+    #    score = g_items[n-1] + gap
+    #    test_items.append(score)
+
+    # print("test", test_items)
+
+    # for dictionary of other cols after gap
+    mismatch = 20
+    match = 0
+    is_equal = {True: match, False: mismatch}
+
+    # for x in range(2,len(seq1) + 2):
+    #    for y in range(2,len(seq2) + 2)
+
+    print(range(2, len(seq1) + 2))
+    print(seq1)
+
 
 # Module code
 def main():
