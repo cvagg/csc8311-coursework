@@ -4,6 +4,9 @@
 
 # NOT FINAL PIECE OF WORK
 
+import pandas as pd
+
+
 # User input alignment action
 def action():
     """Retrieves wanted alignment, either global or local.
@@ -28,24 +31,57 @@ def seq_input():
     ## Could expand this with extra precautions
     ## add a regex to see if the str actually contains bases and only bases- no other chars
     ## Do they have to be the same length?
-    if any(char.isdigit() for char in seq1):
-        print("Error, please enter sequence 1 in correct format with letters A, T, C or G")
-    if any(char.isdigit() for char in seq2):
-        print("Error, please enter sequence 2 in correct format with letters A, T, C or G")
+    # if any(char.isdigit() for char in seq1):
+    #    print("Error, please enter sequence 1 in correct format with letters A, T, C or G")
+    # if any(char.isdigit() for char in seq2):
+    #    print("Error, please enter sequence 2 in correct format with letters A, T, C or G")
 
-    print("\nYou have entered \nSeq 1:", seq1, "\nSeq 2:", seq2)
+    # print("\nYou have entered \nSeq 1:", seq1, "\nSeq 2:", seq2)
     return seq1, seq2
 
-#User input scoring schema
+def split(str):
+    """returns list of char in input str. Source Geeks for Geeks.
+    Could create a class where the string input is all formatted??"""
+    return [char for char in str]
 
 
+# User input scoring schema
+###NEEDS WORK####
 
-#def needleman_wunsch(seq1, seq2, match, mismatch, gap):
+# Needleman and Wunch function
+def n_w(seq1, seq2, match=0, mismatch=20, gap=25):
+    """Returns optimal global alignment of sequences 1 and 2 from user input
+    using the Needleman and Wunch dynamic programming method. Scoring schema is set as default
+    but can be changed in calling of function in main() module code"""
+
+    # create cols for empty matrix
+    s_1 = split(seq1)
+    s_2 = split(seq2)
+
+    s_1.insert(0, "gap")
+    s_2.insert(0, "gap")
+
+    df = pd.DataFrame(columns=s_1, index=s_2)
+    #print(df) #to print empty matrix
+
+    ### Create dictionary to input into matrix one col at a time? ###
+
+    # Gap key
+    g_items = []
+
+    # loop through split sequence list to get gap penalty for first col
+    score = 0
+    for i in range(len(s_2)):
+        if i == 0:
+            score = 0
+        else:
+            score = score + gap
+        g_items.append(score)
 
 
-
+# Module code
 def main():
-    #module code
+    # module code
     action()
     seq_input()
 
