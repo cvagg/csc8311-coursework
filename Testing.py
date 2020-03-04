@@ -14,7 +14,11 @@ def main():
     s1, s2 = seq_input()
     seq1 = split(s1)
     seq2 = split(s2)
-    n_w(seq1,seq2)
+
+    # running both n_w and s_w at the same time changes the seq1 and seq2 code
+    # Need to fix if the user wants to see both alignments of the sequences
+    #n_w(seq1,seq2)
+    s_w(seq1,seq2)
 
 
 # User input alignment action
@@ -58,9 +62,15 @@ def split(s):
 # User input scoring schema
 ###NEEDS WORK####
 
+# This could be implemented?? or create a class where the n_w and s_w can inherit the matrix from
+    # the parent class?
+#def seq_matrix(seq1, seq2):
+#   """creates empty matrix based on the sequences input by the user. These are used in both alignment
+#   algorithm methods"""
+
 # Needleman and Wunch function
 def n_w(seq1, seq2, match=0, mismatch=20, gap=25):
-    """Returns optimal global alignment of sequences 1 and 2 from user input
+    """Returns optimal global alignment of 2 sequences from user input
     using the Needleman and Wunch dynamic programming method. Scoring schema is set as default
     but can be changed in calling of function in main() module code"""
 
@@ -125,8 +135,76 @@ def n_w(seq1, seq2, match=0, mismatch=20, gap=25):
 
     # implement array as pandas data frame
     nw_df = pd.DataFrame(data=a)
-    print("Scoring matrix:", "\n", nw_df)
+    print("\nGlobal scoring matrix:", "\n", nw_df)
     return nw_df
+
+# Smith Waterman algorithm
+def s_w(seq1, seq2, match=5, mismatch=-3, gap=-5):
+    """Returns optimal local alignment of two sequences from user input using the Smith Waterman method.
+    Scoring schema is set as default but can be changed in calling of function in main module code."""
+
+    # add Gap penalty col and row for each sequence
+    seq1.insert(0, " ")
+    seq1.insert(1, "0")  # 0 means gap penalty
+    seq2.insert(0, " ")
+    seq2.insert(1, "0")
+
+    # create empty array (matrix)
+    a = np.full((len(seq2), len(seq1)), " ", dtype="object")
+
+    # change headers
+    a[0, :] = seq1  # x-axis header (seq1)
+    a[:, 0] = seq2  # y-axis header (seq2)
+
+    # set gap scores to zero
+    gap_x = 0
+    gap_y = 0
+
+    for x in range(1, len(seq1)):
+        for y in range(1, len(seq2)):
+
+            # initial gap penalties
+            if x == 1 or y == 1:
+                a[y, x] = 0
+
+            # match ?
+            elif seq1[x] == seq2[y]:
+                a[y, x] = a[y - 1, x - 1] + match
+
+            # mismatch/gap
+            else:
+                # a[y,x] = "mismatch"
+
+                # mismatch (diagonal)
+                mis_score = a[y - 1, x - 1] + mismatch
+
+                # gap score from side
+                gap_side = a[y, x - 1] + gap
+
+                # gap score from above
+                gap_above = a[y - 1, x] + gap
+
+                # max value is selected
+                if (mis_score >= gap_side) and (mis_score >= gap_above):
+                    largest = mis_score
+                elif (gap_side >= mis_score) and (gap_side >= gap_above):
+                    largest = gap_side
+                else:
+                    largest = gap_above
+
+                a[y, x] = largest
+
+    sw_df = pd.DataFrame(data=a)
+    print(sw_df)
+    return sw_df
+
+    # implement array as pandas data frame
+    sw_df = pd.DataFrame(data=a)
+    print("\nLocal scoring matrix:", "\n", sw_df)
+    return sw_df
+
+
+
 
 
 if __name__ == "__main__":
