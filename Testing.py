@@ -5,6 +5,16 @@
 # NOT FINAL PIECE OF WORK
 
 import pandas as pd
+import numpy as np
+
+
+def main():
+    # module code
+    #action()
+    s1, s2 = seq_input()
+    seq1 = split(s1)
+    seq2 = split(s2)
+    n_w(seq1,seq2)
 
 
 # User input alignment action
@@ -39,11 +49,11 @@ def seq_input():
     # print("\nYou have entered \nSeq 1:", seq1, "\nSeq 2:", seq2)
     return seq1, seq2
 
-def split(str):
+
+def split(s):
     """returns list of char in input str. Source Geeks for Geeks.
     Could create a class where the string input is all formatted??"""
-    return [char for char in str]
-
+    return [char for char in s]
 
 # User input scoring schema
 ###NEEDS WORK####
@@ -54,61 +64,69 @@ def n_w(seq1, seq2, match=0, mismatch=20, gap=25):
     using the Needleman and Wunch dynamic programming method. Scoring schema is set as default
     but can be changed in calling of function in main() module code"""
 
-    # create cols for empty matrix
-    s_1 = split(seq1)
-    s_2 = split(seq2)
+    # add Gap penalty col and row for each sequence
+    seq1.insert(0, " ")
+    seq1.insert(1, "0")  # 0 means gap penalty
+    seq2.insert(0, " ")
+    seq2.insert(1, "0")
 
-    s_1.insert(0, "gap")
-    s_2.insert(0, "gap")
+    # create empty array (matrix)
+    a = np.full((len(seq2), len(seq1)), " ", dtype="object")
 
-    df = pd.DataFrame(columns=s_1, index=s_2)
-    #print(df) #to print empty matrix
+    # change headers
+    a[0, :] = seq1  # x-axis header (seq1)
+    a[:, 0] = seq2  # y-axis header (seq2)
 
-    ### Create dictionary to input into matrix one col at a time? ###
+    # set gap scores to zero
+    gap_x = 0
+    gap_y = 0
 
-    # Gap key
-    g_items = []
+    for x in range(1, len(seq1)):
+        for y in range(1, len(seq2)):
 
-    # loop through split sequence list to get gap penalty for first col
-    score = 0
-    for i in range(len(s_2)):
-        if i == 0:
-            score = 0
-        else:
-            score = score + gap
-        g_items.append(score)
+            # initial gap penalties
+            if x == 1 and y == 1:
+                gap_x = 0
+                a[y, x] = gap_x
+            elif y == 1:
+                gap_y = gap_y + gap
+                a[y, x] = gap_y
+            elif x == 1:
+                gap_x = gap_x + gap
+                a[y, x] = gap_x
 
-    # print(g_items) #[0, 25, 50, 75]
+            # match ?
+            elif seq1[x] == seq2[y]:
+                # a[y,x] = "match"
+                a[y, x] = a[y - 1, x - 1] + match
 
-    # other cols, match, mismatch or gap?
-    score = 0
-    test_items = []
-    for n in range(len(seq1)):
-        if seq1[n] ==
-    # print(n)
-    # if seq2[n] == seq1[n]: #match
-    #    score = g_items[n-1] + gap
-    #    test_items.append(score)
+            # mismatch/gap
+            else:
+                # a[y,x] = "mismatch"
 
-    # print("test", test_items)
+                # mismatch
+                mis_score = a[y - 1, x - 1] + mismatch
 
-    # for dictionary of other cols after gap
-    mismatch = 20
-    match = 0
-    is_equal = {True: match, False: mismatch}
+                # gap score from side
+                gap_side = a[y, x - 1] + gap
 
-    # for x in range(2,len(seq1) + 2):
-    #    for y in range(2,len(seq2) + 2)
+                # gap score from above
+                gap_above = a[y - 1, x] + gap
 
-    print(range(2, len(seq1) + 2))
-    print(seq1)
+                # max value is selected
+                if (mis_score >= gap_side) and (mis_score >= gap_above):
+                    largest = mis_score
+                elif (gap_side >= mis_score) and (gap_side >= gap_above):
+                    largest = gap_side
+                else:
+                    largest = gap_above
 
+                a[y, x] = largest
 
-# Module code
-def main():
-    # module code
-    action()
-    seq_input()
+    # implement array as pandas data frame
+    nw_df = pd.DataFrame(data=a)
+    print("Scoring matrix:", "\n", nw_df)
+    return nw_df
 
 
 if __name__ == "__main__":
