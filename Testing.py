@@ -104,7 +104,7 @@ def n_w(seq1, seq2, match=0, mismatch=20, gap=25):
             else:
                 # a[y,x] = "mismatch"
 
-                # mismatch
+                # mismatch (diagonal)
                 mis_score = a[y - 1, x - 1] + mismatch
 
                 # gap score from side
@@ -114,14 +114,14 @@ def n_w(seq1, seq2, match=0, mismatch=20, gap=25):
                 gap_above = a[y - 1, x] + gap
 
                 # max value is selected
-                if (mis_score >= gap_side) and (mis_score >= gap_above):
-                    largest = mis_score
-                elif (gap_side >= mis_score) and (gap_side >= gap_above):
-                    largest = gap_side
+                if (mis_score <= gap_side) and (mis_score <= gap_above):
+                    smallest = mis_score
+                elif (gap_side <= mis_score) and (gap_side <= gap_above):
+                    smallest = gap_side
                 else:
-                    largest = gap_above
+                    smallest = gap_above
 
-                a[y, x] = largest
+                a[y, x] = smallest
 
     # implement array as pandas data frame
     nw_df = pd.DataFrame(data=a)
