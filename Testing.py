@@ -14,7 +14,7 @@ def action():
     b = True
     while b:
         b = False
-        act = input("\nPlease type which action you would like to run "
+        act = input("\nPlease type which alignment you would like to run "
                     "\n G for global alignment or L for local alignment: ")
         if act is not "G" and act is not "L":
             print("Error, please answer in correct format")
