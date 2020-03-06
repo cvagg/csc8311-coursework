@@ -32,39 +32,25 @@ def main():
 
     # changed schema
     if score:
-        match, mismatch, gap = score
         if act:
-            n_w(seq1,seq2, match, mismatch, gap)
+            n_w(seq1, seq2)
         else:
-            s_w(seq1, seq2, match, mismatch, gap)
+            s_w(seq1, seq2)
 
     # schema not changed
     else:
+        match, mismatch, gap = score
         if act:
-            n_w(seq1,seq2)
+            n_w(seq1, seq2, match, mismatch, gap)
         else:
-            s_w(seq1,seq2)
+            s_w(seq1, seq2, match, mismatch, gap)
 
 
-# def answer(question, t, f):
-#     reply = str(input(question + "{}/{}".format(t,f))).lower().strip()
-#     ans = True
-#     if reply[0] == t:
-#         ans = True
-#         return ans
-#     if reply[0] == f:
-#         ans = False
-#         return ans
-#     else:
-#         print("Error, please answer in correct format")
-#         return answer(question, t, f)
 
 # User input alignment action
 def action():
     """Retrieves wanted alignment, either global or local.
     Returns: act (action) True for global or False for local"""
-
-   # ans = answer("\nPlease type which alignment you would like to run (G/L): ", "g", "l")
 
     reply = str(input("\nPlease type which alignment you would like to run (G/L): ")).lower().strip()
     if reply[0] == "g":
@@ -107,49 +93,119 @@ def scoring(method):
     """prompts user to input scoring schema if they want to change default settings
     Input method either True (global) or False (local)"""
 
-    def prompt(method, match, mismatch, gap):
+    # global
+    if method:
         m = True
-        if method:
-            method = "global"
-        else:
-            method = "local"
         while m:
             m = False
-            print("You have selected {} alignment, the default scoring schema is \nmatch = {}"
-                  "\nmismatch = {}"
-                  "\ngap = {}".format(method, match, mismatch, gap))
+            print("You have selected global alignment, the default scoring schema is"
+                  "\nmatch = 0"
+                  "\nmismatch = 20"
+                  "\ngap = 25")
 
             # y is act is true, n act is false
             reply = str(input("\nWould you like to change the scoring schema? (y/n)")).lower().strip()
-            if reply == "y":
-                ans = True
-            # return act
-            elif reply == "n":
-                ans = False
-            # return act
+            if reply[0] == "y":
+                act = True
+                #return act
+            if reply[0] == "n":
+                act = False
+                #return act
             else:
                 print("Error, please answer as y/n")
                 m = True
 
-            # user wants to change scoring schema
-        if ans:
+        # user wants to change scoring schema
+        if act:
             print("Please enter values of each penalty to update the scoring schema")
-            match = int(input("\nmatch = "))
-            mismatch = int(input("\nmismatch = "))
-            gap = int(input("\ngap = "))
+            match = input("\nmatch = ")
+            mismatch = input("\nmismatch = ")
+            gap = input("\ngap = ")
             return match, mismatch, gap
+
         else:
             return True
 
-    # global
-    if method:
-        match, mismatch, gap = prompt(method, 0, 20, 25)
 
     # local
     else:
-        match, mismatch, gap = prompt(method, 5, -3, -5)
+        m = True
+        while m:
+            m = False
+            print("You have selected local alignment, the default scoring schema is"
+                  "\nmatch = 5"
+                  "\nmismatch = -3"
+                  "\ngap = -5")
 
-    return match, mismatch, gap
+            # y is act is true, n act is false
+            reply = str(input("\nWould you like to change the scoring schema? (y/n)")).lower().strip()
+            if reply[0] == "y":
+                act = True
+                # return act
+            if reply[0] == "n":
+                act = False
+                # return act
+            else:
+                print("Error, please answer as y/n")
+                m = True
+
+        # user wants to change scoring schema
+        if act:
+            print("Please enter values of each penalty to update the scoring schema")
+            match = input("\nmatch = ")
+            mismatch = input("\nmismatch = ")
+            gap = input("\ngap = ")
+            return match, mismatch, gap
+
+        else:
+            return True
+
+
+    #return match, mismatch, gap
+
+    # def prompt(method, match, mismatch, gap):
+    #     m = True
+    #     if method:
+    #         a = "global"
+    #     else:
+    #         a = "local"
+    #     while m:
+    #         m = False
+    #         print("You have selected {} alignment, the default scoring schema is \nmatch = {}"
+    #               "\nmismatch = {}"
+    #               "\ngap = {}".format(a, match, mismatch, gap))
+    #
+    #         # y is act is true, n act is false
+    #         reply = str(input("\nWould you like to change the scoring schema? (y/n)")).lower().strip()
+    #         if reply == "y":
+    #             ans = True
+    #         # return act
+    #         elif reply == "n":
+    #             ans = False
+    #         # return act
+    #         else:
+    #             print("Error, please answer as y/n")
+    #             m = True
+    #
+    #         # user wants to change scoring schema
+    #     if ans:
+    #         print("Please enter values of each penalty to update the scoring schema")
+    #         match = int(input("\nmatch = "))
+    #         mismatch = int(input("\nmismatch = "))
+    #         gap = int(input("\ngap = "))
+    #         return match, mismatch, gap
+    #     else:
+    #         return True
+    #
+    # # global
+    # if method:
+    #     match, mismatch, gap = prompt(method, 0, 20, 25)
+    #
+    # # local
+    # else:
+    #     match, mismatch, gap = prompt(method, 5, -3, -5)
+    #
+    # return match, mismatch, gap
 
 
 
