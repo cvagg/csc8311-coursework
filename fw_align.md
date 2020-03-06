@@ -77,4 +77,5 @@ Idea of function to get positions of aligned sequence:
             a_seq2.append(seq2[y])
   
 Would return:
+
     >>> alignment positions: [(7, 4), (6, 3), (5, 2), (4, 2)]
