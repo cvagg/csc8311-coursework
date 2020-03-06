@@ -11,7 +11,7 @@ import re
 
 def main():
     # module code
-    print("Welcome to the sequence aligner "
+    print("**********\nWelcome to the sequence aligner "
           "\n**********"
           "\nSequences can be aligned globally using the "
           "Needleman and Wunch method or locally using the Smith Waterman method"
@@ -26,22 +26,53 @@ def main():
 
     # global or local alignment:
     act = action()
-    if act:
-        n_w(seq1,seq2)
-    else:
-        s_w(seq1,seq2)
 
+    # change scoring schema?
+    score = scoring(act)
+
+    # changed schema
+    if score:
+        match, mismatch, gap = score
+        if act:
+            n_w(seq1,seq2, match, mismatch, gap)
+        else:
+            s_w(seq1, seq2, match, mismatch, gap)
+
+    # schema not changed
+    else:
+        if act:
+            n_w(seq1,seq2)
+        else:
+            s_w(seq1,seq2)
+
+
+# def answer(question, t, f):
+#     reply = str(input(question + "{}/{}".format(t,f))).lower().strip()
+#     ans = True
+#     if reply[0] == t:
+#         ans = True
+#         return ans
+#     if reply[0] == f:
+#         ans = False
+#         return ans
+#     else:
+#         print("Error, please answer in correct format")
+#         return answer(question, t, f)
 
 # User input alignment action
 def action():
     """Retrieves wanted alignment, either global or local.
     Returns: act (action) True for global or False for local"""
+
+   # ans = answer("\nPlease type which alignment you would like to run (G/L): ", "g", "l")
+
     reply = str(input("\nPlease type which alignment you would like to run (G/L): ")).lower().strip()
     if reply[0] == "g":
         act = True
         return act
     if reply[0] == "l":
         act = False
+        return act
     else:
         print("Error, please answer in correct format")
         return action()
@@ -50,7 +81,7 @@ def action():
 # User Input of sequences
 def seq_input():
     """Gets sequences for alignment from user"""
-    print("Please input your sequences as nucleotides, can be either upper or lower case")
+    print("Please input your sequences as nucleotides, can be either upper or lower case\n")
     b = True
     r = re.compile("(?i)^[ACTG]+$")
     while b:
@@ -72,15 +103,57 @@ def split(s):
     return [char for char in s]
 
 # User input scoring schema
-###NEEDS WORK####
+def scoring(method):
+    """prompts user to input scoring schema if they want to change default settings
+    Input method either True (global) or False (local)"""
 
-# This could be implemented?? or create a class where the n_w and s_w can inherit the matrix from
-    # the parent class?
-#def seq_matrix(seq1, seq2):
-#   """creates empty matrix based on the sequences input by the user. These are used in both alignment
-#   algorithm methods"""
+    def prompt(method, match, mismatch, gap):
+        m = True
+        if method:
+            method = "global"
+        else:
+            method = "local"
+        while m:
+            m = False
+            print("You have selected {} alignment, the default scoring schema is \nmatch = {}"
+                  "\nmismatch = {}"
+                  "\ngap = {}".format(method, match, mismatch, gap))
 
-# Needleman and Wunch function
+            # y is act is true, n act is false
+            reply = str(input("\nWould you like to change the scoring schema? (y/n)")).lower().strip()
+            if reply == "y":
+                ans = True
+            # return act
+            elif reply == "n":
+                ans = False
+            # return act
+            else:
+                print("Error, please answer as y/n")
+                m = True
+
+            # user wants to change scoring schema
+        if ans:
+            print("Please enter values of each penalty to update the scoring schema")
+            match = int(input("\nmatch = "))
+            mismatch = int(input("\nmismatch = "))
+            gap = int(input("\ngap = "))
+            return match, mismatch, gap
+        else:
+            return True
+
+    # global
+    if method:
+        match, mismatch, gap = prompt(method, 0, 20, 25)
+
+    # local
+    else:
+        match, mismatch, gap = prompt(method, 5, -3, -5)
+
+    return match, mismatch, gap
+
+
+
+# Needleman and Wunch function (global)
 def n_w(seq1, seq2, match=0, mismatch=20, gap=25):
     """Returns optimal global alignment of 2 sequences from user input
     using the Needleman and Wunch dynamic programming method. Scoring schema is set as default
