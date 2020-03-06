@@ -113,7 +113,7 @@ def scoring(method):
             if reply[0] == "y":
                 act = True
 
-            if reply[0] == "n":
+            elif reply[0] == "n":
                 act = False
 
             else:
