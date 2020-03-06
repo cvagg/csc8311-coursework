@@ -6,6 +6,7 @@
 
 import pandas as pd
 import numpy as np
+from numpy.core._multiarray_umath import ndarray
 
 
 def main():
@@ -41,14 +42,6 @@ def seq_input():
     """Gets sequences for alignment from user"""
     seq1 = input("Please enter sequence 1: ")
     seq2 = input("Please enter sequence 2: ")
-
-    ## Could expand this with extra precautions
-    ## add a regex to see if the str actually contains bases and only bases- no other chars
-    ## Do they have to be the same length?
-    # if any(char.isdigit() for char in seq1):
-    #    print("Error, please enter sequence 1 in correct format with letters A, T, C or G")
-    # if any(char.isdigit() for char in seq2):
-    #    print("Error, please enter sequence 2 in correct format with letters A, T, C or G")
 
     # print("\nYou have entered \nSeq 1:", seq1, "\nSeq 2:", seq2)
     return seq1, seq2
@@ -123,7 +116,7 @@ def n_w(seq1, seq2, match=0, mismatch=20, gap=25):
                 # gap score from above
                 gap_above = a[y - 1, x] + gap
 
-                # max value is selected
+                # min value is selected
                 if (mis_score <= gap_side) and (mis_score <= gap_above):
                     smallest = mis_score
                 elif (gap_side <= mis_score) and (gap_side <= gap_above):
@@ -134,8 +127,16 @@ def n_w(seq1, seq2, match=0, mismatch=20, gap=25):
                 a[y, x] = smallest
 
     # implement array as pandas data frame
-    nw_df = pd.DataFrame(data=a)
+    nw_df = pd.DataFrame(data=a[1:], columns=a[0]).set_index(" ")
+    nw_df.index.name = None
+
+    # Global scoring matrix
     print("\nGlobal scoring matrix:", "\n", nw_df)
+
+    # Optimal alignment(s) from matrix
+
+        # start at (len(col), len(row)) work backwards
+
     return nw_df
 
 # Smith Waterman algorithm
@@ -194,13 +195,51 @@ def s_w(seq1, seq2, match=5, mismatch=-3, gap=-5):
 
                 a[y, x] = largest
 
-    sw_df = pd.DataFrame(data=a)
-    print(sw_df)
-    return sw_df
+    sw_df = pd.DataFrame(data=a[1:], columns=a[0]).set_index(" ")
+    sw_df.index.name = None
 
-    # implement array as pandas data frame
-    sw_df = pd.DataFrame(data=a)
+    # Scoring matrix
     print("\nLocal scoring matrix:", "\n", sw_df)
+
+    # Alignment
+    def aligner(x,y,array,results=[]):
+        results.append((x,y))
+        vals = [array[x-1,y-1],array[x,y-1], array[x-1,y]]
+        biggest = np.argmax(vals)
+
+        if vals[biggest] == 0:
+            return results
+
+        if biggest == 0:
+            return aligner(x-1,y-1,array,results)
+        elif biggest == 1:
+            return aligner(x, y - 1, array, results)
+        else:
+            return aligner(x - 1, y, array, results)
+
+    algn = aligner(y,x,a)
+    print("alignment positions:", algn)
+
+    a_seq1 = []
+    a_seq2 = []
+
+    # make seq1 and seq2 the same length
+
+    for i in algn:
+        #print("i",i)
+        y,x = i
+
+        if seq1[x] == seq2[y]:  #match
+            a_seq1.append(seq1[x])
+            a_seq2.append(seq2[y])
+
+        else:  #gap
+            a_seq1.append(["-", seq1[x]])
+            a_seq2.append(seq2[y])
+
+    a = sw_df.max(axis=0)
+    print(a_seq1, a_seq2)
+    #print(a)
     return sw_df
 
 
