@@ -6,43 +6,62 @@
 
 import pandas as pd
 import numpy as np
-from numpy.core._multiarray_umath import ndarray
+import re
 
 
 def main():
     # module code
-    #action()
+    print("Welcome to the sequence aligner "
+          "\n**********"
+          "\nSequences can be aligned globally using the "
+          "Needleman and Wunch method or locally using the Smith Waterman method"
+          "\n**********")
+
+    # Sequence input
     s1, s2 = seq_input()
+
+    # Sequence formatting for entering in matrix
     seq1 = split(s1)
     seq2 = split(s2)
 
-    # running both n_w and s_w at the same time changes the seq1 and seq2 code
-    # Need to fix if the user wants to see both alignments of the sequences
-    #n_w(seq1,seq2)
-    s_w(seq1,seq2)
+    # global or local alignment:
+    act = action()
+    if act:
+        n_w(seq1,seq2)
+    else:
+        s_w(seq1,seq2)
 
 
 # User input alignment action
 def action():
     """Retrieves wanted alignment, either global or local.
-    Returns: act (action) either G for global or L for local"""
-    b = True
-    while b:
-        b = False
-        act = input("\nPlease type which alignment you would like to run "
-                    "\n G for global alignment or L for local alignment: ")
-        if act is not "G" and act is not "L":
-            print("Error, please answer in correct format")
-            b = True
-    return act
+    Returns: act (action) True for global or False for local"""
+    reply = str(input("\nPlease type which alignment you would like to run (G/L): ")).lower().strip()
+    if reply[0] == "g":
+        act = True
+        return act
+    if reply[0] == "l":
+        act = False
+    else:
+        print("Error, please answer in correct format")
+        return action()
 
 
 # User Input of sequences
 def seq_input():
     """Gets sequences for alignment from user"""
-    seq1 = input("Please enter sequence 1: ")
-    seq2 = input("Please enter sequence 2: ")
+    print("Please input your sequences as nucleotides, can be either upper or lower case")
+    b = True
+    r = re.compile("(?i)^[ACTG]+$")
+    while b:
+        seq1 = input("Sequence 1: ")
+        seq2 = input("Sequence 2: ")
 
+        # check if sequence input matches format
+        if r.match(seq1) and r.match(seq2):
+            b = False
+        else:
+            print("Error, please enter sequences in desired format")
     # print("\nYou have entered \nSeq 1:", seq1, "\nSeq 2:", seq2)
     return seq1, seq2
 
