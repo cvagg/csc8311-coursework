@@ -1,8 +1,10 @@
-##################################
-# Test submit to github repository
-##################################
+##############################################
+# csc8311: Advanced Programming for Biologists
+# Coursework
+# Student ID: 160346817
+# March 2020
+###############################################
 
-# NOT FINAL PIECE OF WORK
 
 import pandas as pd
 import numpy as np
@@ -46,7 +48,6 @@ def main():
             s_w(seq1, seq2, match, mismatch, gap)
 
 
-
 # User input alignment action
 def action():
     """Retrieves wanted alignment, either global or local.
@@ -67,6 +68,7 @@ def action():
 # User Input of sequences
 def seq_input():
     """Gets sequences for alignment from user"""
+    global seq1, seq2
     print("Please input your sequences as nucleotides, can be either upper or lower case\n")
     b = True
     r = re.compile("(?i)^[ACTG]+$")
@@ -88,12 +90,14 @@ def split(s):
     Could create a class where the string input is all formatted??"""
     return [char for char in s]
 
+
 # User input scoring schema
 def scoring(method):
     """prompts user to input scoring schema if they want to change default settings
     Input method either True (global) or False (local)"""
 
     # global
+    global act
     if method:
         m = True
         while m:
@@ -105,12 +109,13 @@ def scoring(method):
 
             # y is act is true, n act is false
             reply = str(input("\nWould you like to change the scoring schema? (y/n)")).lower().strip()
+
             if reply[0] == "y":
                 act = True
-                #return act
+
             if reply[0] == "n":
                 act = False
-                #return act
+
             else:
                 print("Error, please answer as y/n")
                 m = True
@@ -125,7 +130,6 @@ def scoring(method):
 
         else:
             return True
-
 
     # local
     else:
@@ -159,54 +163,6 @@ def scoring(method):
 
         else:
             return True
-
-
-    #return match, mismatch, gap
-
-    # def prompt(method, match, mismatch, gap):
-    #     m = True
-    #     if method:
-    #         a = "global"
-    #     else:
-    #         a = "local"
-    #     while m:
-    #         m = False
-    #         print("You have selected {} alignment, the default scoring schema is \nmatch = {}"
-    #               "\nmismatch = {}"
-    #               "\ngap = {}".format(a, match, mismatch, gap))
-    #
-    #         # y is act is true, n act is false
-    #         reply = str(input("\nWould you like to change the scoring schema? (y/n)")).lower().strip()
-    #         if reply == "y":
-    #             ans = True
-    #         # return act
-    #         elif reply == "n":
-    #             ans = False
-    #         # return act
-    #         else:
-    #             print("Error, please answer as y/n")
-    #             m = True
-    #
-    #         # user wants to change scoring schema
-    #     if ans:
-    #         print("Please enter values of each penalty to update the scoring schema")
-    #         match = int(input("\nmatch = "))
-    #         mismatch = int(input("\nmismatch = "))
-    #         gap = int(input("\ngap = "))
-    #         return match, mismatch, gap
-    #     else:
-    #         return True
-    #
-    # # global
-    # if method:
-    #     match, mismatch, gap = prompt(method, 0, 20, 25)
-    #
-    # # local
-    # else:
-    #     match, mismatch, gap = prompt(method, 5, -3, -5)
-    #
-    # return match, mismatch, gap
-
 
 
 # Needleman and Wunch function (global)
@@ -281,11 +237,8 @@ def n_w(seq1, seq2, match=0, mismatch=20, gap=25):
     # Global scoring matrix
     print("\nGlobal scoring matrix:", "\n", nw_df)
 
-    # Optimal alignment(s) from matrix
-
-        # start at (len(col), len(row)) work backwards
-
     return nw_df
+
 
 # Smith Waterman algorithm
 def s_w(seq1, seq2, match=5, mismatch=-3, gap=-5):
@@ -350,22 +303,22 @@ def s_w(seq1, seq2, match=5, mismatch=-3, gap=-5):
     print("\nLocal scoring matrix:", "\n", sw_df)
 
     # Alignment
-    def aligner(x,y,array,results=[]):
-        results.append((x,y))
-        vals = [array[x-1,y-1],array[x,y-1], array[x-1,y]]
+    def aligner(x, y, array, results=[]):
+        results.append((x, y))
+        vals = [array[x - 1, y - 1], array[x, y - 1], array[x - 1, y]]
         biggest = np.argmax(vals)
 
         if vals[biggest] == 0:
             return results
 
         if biggest == 0:
-            return aligner(x-1,y-1,array,results)
+            return aligner(x - 1, y - 1, array, results)
         elif biggest == 1:
             return aligner(x, y - 1, array, results)
         else:
             return aligner(x - 1, y, array, results)
 
-    algn = aligner(y,x,a)
+    algn = aligner(y, x, a)
     print("alignment positions:", algn)
 
     a_seq1 = []
@@ -374,25 +327,23 @@ def s_w(seq1, seq2, match=5, mismatch=-3, gap=-5):
     # make seq1 and seq2 the same length
 
     for i in algn:
-        #print("i",i)
-        y,x = i
+        # print("i",i)
+        y, x = i
 
-        if seq1[x] == seq2[y]:  #match
+        if seq1[x] == seq2[y]:  # match
             a_seq1.append(seq1[x])
             a_seq2.append(seq2[y])
 
-        else:  #gap
+        else:  # gap
             a_seq1.append(["-", seq1[x]])
             a_seq2.append(seq2[y])
 
     a = sw_df.max(axis=0)
     print(a_seq1, a_seq2)
-    #print(a)
+    # print(a)
     return sw_df
 
 
-
-
-
+# execute program
 if __name__ == "__main__":
     main()
