@@ -8,7 +8,7 @@ Requires Python 3.
 This program works best within an IDE e.g. pycharm. However, if run inside a terminal such as linux the input from prompts must be entered in string format " ".
 
 ## Further Work
-If I had more time I would implement a file read option where users could load a fasta file containing the two sequences instead of inputting them in the command line. I also wanted to display the optimal alignment that the scoring matrix computed but did not have enough time. Please see the opt_align.txt file in this repository with some pseudocode on how I would implement this if I had more time to work on it.
+If I had more time I would implement a file read option where users could load a fasta file containing the two sequences instead of inputting them in the command line. I also wanted to display the optimal alignment that the scoring matrix computed but did not have enough time. Please see the fw_align.md file in this repository with some pseudocode on how I would implement this if I had more time to work on it.
 
 e.g.
 
